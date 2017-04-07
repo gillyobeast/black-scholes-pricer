@@ -6,22 +6,30 @@
 using namespace std;
 
 double stod(string s) {                 // std:stod doesn't work!!
-
     double d;
     stringstream ss(s); //turn the string into a stream
     ss >> d;            //convert
     return d;
 }
 
+double getTime(){
+    double _t=0;
+    while (_t<=0){
+        cout << "Enter (positive) time step, in years: " << endl;
+        cin >> _t;
+    }
+    return _t;
+}
+
+
 
 int main()
 {
-    cout.precision(10);
+    cout.precision(10);                 // ensures cout outputs nicely
 
     ifstream data("data.csv");          // creates input stream object 'data' [if i make it fstream, it clears it after reading]
     string line, s0i, s1i;
-    vector<double> s0, s1;              // look at pushing the below out to a discrete function
-                                        // taking args 'ifstream data, vector<double> s0, vector<double> s1'
+    vector<double> s0, s1;
 
     while (getline(data, line)){        // stores each column in data in vectors s0,s1
                                         // processes 'data' line by line - stores each line in 'line'
@@ -36,15 +44,9 @@ int main()
         s1.push_back(ds1i);
     }
 
-    double t = 0.25;
-    /*{   double t=0;                     // gets time step t
-        while (t <= 0) {                // ensures t is strictly positive
-            cout << "Enter (positive) time step, in years: " << endl;
-            cin >> t;
-        }
-    }*/ //commented out for brevity while testing
+    double t = getTime();
 
-    // here we will estimate volatilities sigma0, sigma1 and correlation rho
+
 
     //create a real badass function for mean of a vector
 
