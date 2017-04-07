@@ -1,14 +1,14 @@
 #ifndef CALIBRATION_H_INCLUDED
 #define CALIBRATION_H_INCLUDED
 
-double stod(string _s) {                // std:stod doesn't work!!
+double stod(string _s) {                                    // std:stod doesn't work!!
     double _d;
-    stringstream _ss(_s);               //turn the string into a stream
-    _ss >> _d;                          //convert
+    stringstream _ss(_s);
+    _ss >> _d;
     return _d;
 }
 
-double getTime(){
+double getTime(){                                           // has user input a positive time in years
     double _t=0;
     while (_t<=0){
         cout << "Enter (positive) time step, in years: " << endl;
@@ -17,7 +17,16 @@ double getTime(){
     return _t;
 }
 
-double vecMean(vector<double> _vec){
+vector<double> logReturns(vector<double> _vec){             // creates a vector containing log returns of a given vector
+    int _m = _vec.size();
+    vector<double> _out;
+    for (int i=0; i<_m-1; i++){
+        _out.push_back(log(_vec[i+1]/_vec[i]));
+    }
+    return _out;
+}
+
+double vecMean(vector<double> _vec){                        //calculates mean of a vector of doubles
     double _sum = 0;
     int _m=_vec.size();
     for (int i=0;i<_m;i++){

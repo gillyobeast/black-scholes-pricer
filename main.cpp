@@ -9,7 +9,6 @@ using namespace std;
 
 
 
-
 int main()
 {
     cout.precision(10);                 // ensures cout outputs nicely
@@ -28,29 +27,18 @@ int main()
 
         getline(lineStream,s1i);        // same as above three lines
         double ds1i = stod(s1i);
-        s1.push_back(ds1i);
+        s1.push_back(ds1i);             // THIS IS V MESSY AND I HATE IT but i can't get it to work outside of main
     }
-
 
     double t = .25; //getTime();
-    vector<double> r0, r1;                  // r0[i-1] will store r0,i; log returns
-
-    for (int i=0; i<s0.size()-1; i++){      // would it be more efficient than push_back to initialise to s0.size()-1 and assign directly?
-        r0.push_back(log(s0[i+1]/s0[i]));
-    }
-    for (int i=0; i<s1.size()-1; i++){
-        r1.push_back(log(s1[i+1]/s1[i]));
-    }
-
+    vector<double> r0=logReturns(s0), r1=logReturns(s1);
     double sampleVar0=sampleVar(r0),sampleVar1=sampleVar(r1);
-    double sampleCov=sampleCovar(r0,r1);                           //sample covariance
-
-
+    double sampleCov=sampleCovar(r0,r1);
     double historicalVolatility0 = sqrt(sampleVar0/t);
     double historicalVolatility1 = sqrt(sampleVar1/t);
     double historicalCorrelation = sampleCov / (t*historicalVolatility0*historicalVolatility1);
 
-                                            // cause cout for vectors is borked damnit
+
     cout << "Sample Variances: " << sampleVar0 << ", " << sampleVar1 << endl;
     cout << historicalVolatility0 << endl;
     cout << historicalVolatility1 << endl;
