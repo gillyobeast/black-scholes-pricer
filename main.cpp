@@ -11,7 +11,9 @@ using namespace std;
 
 int main()
 {
-    cout.precision(10);                 // ensures cout outputs nicely
+    /* 1. MODEL CALIBRATION */
+
+    cout.precision(10);                 // ensures cout outputs doubles to a reasonable accuracy
 
     ifstream data("data.csv");          // creates input stream object 'data' [if i make it fstream, it clears it after reading]
     string line, s0i, s1i;
@@ -36,11 +38,32 @@ int main()
     double sampleCov=sampleCovar(r0,r1);
     double historicalVolatility0 = sqrt(sampleVar0/t);
     double historicalVolatility1 = sqrt(sampleVar1/t);
+    vector<double> historicalVolatility;
+    historicalVolatility.push_back(historicalVolatility0);
+    historicalVolatility.push_back(historicalVolatility1);
     double historicalCorrelation = sampleCov / (t*historicalVolatility0*historicalVolatility1);
 
 
-    cout << "Sample Variances: " << sampleVar0 << ", " << sampleVar1 << endl;
-    cout << historicalVolatility0 << endl;
-    cout << historicalVolatility1 << endl;
-    cout << historicalCorrelation << endl;
+    cout << "Sample Variances:          " << sampleVar0 << endl
+         << "                           " << sampleVar1 << endl;
+    cout << "Historical Volatilities:   " << historicalVolatility0 << endl
+         << "                           " << historicalVolatility1 << endl;
+    cout << "Historical Correlation:    " << historicalCorrelation << endl;
+
+
+
+
+    /* 2. TWO-DIMENSIONAL BLACK-SCHOLES MODEL */
+    double stock0, stock1, rate;
+    vector<double> stockCurrent;
+    cout << "Please provide values for initial stock prices and interest rate." << endl;
+    cout << "Current stock price of S0:" << endl;
+    cin  >> stock0;
+    cout << "Current stock price of S1:" << endl;
+    cin  >> stock1;
+    cout << "Interest Rate (as decimal value):" << endl;
+    cin  >> rate;
+    stockCurrent.push_back(stock0); stockCurrent.push_back(stock1);
+    //BSModel2 Model(stockCurrent, rate, historicalVolatility, historicalCorrelation);
+
 }
