@@ -3,8 +3,9 @@
 #include <fstream>
 #include <sstream>
 #include "Project.h"
-#include "Solver02.h"
+#include "Solver03.h"
 using namespace std;
+
 
 
 
@@ -42,13 +43,14 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
                     /// used the rearranged form from hint
 
 
+    double q1 = 0.50; // until i can figure out what to do here
 
 
-
-    q.push_back(q0); //q.push_back(q1);
+    q.push_back(q0); q.push_back(q1);
 
 }
-
+//               return (1-q0)*(1-x)*S(1,0,0)[1]+q0*(1-x)*S(1,1,0)[1]
+//                        +(1-q0)*x*S(1,0,1)[1]+q0*x*S(1,1,1)[1];
 
 
 
@@ -61,11 +63,14 @@ vector<double> CorrBinModel::S (int n, int j0, int j1) const{
 }
 
         //returns 1 if 0<q[k]<1 for k=0,1
-//        bool CorrBinModel::IsArbitrageFree() const{
-//            for(int 1;i<2;i++){
-//                if ()
-//            }
-//        }
+bool CorrBinModel::IsArbitrageFree() const{
+    for(int i=0;i<2;i++){
+        if (q[i]<=0||q[i]>=1) return 0;
+    }
+    return 1;
+}
 
-        //Probability of node (j0,j1) at time step n
-//        double CorrBinModel::Prob(int n, int j0, int j1) const;
+        //Probability of node (j0,j1) at time step n -- aka Q(n;j0,j1)
+double CorrBinModel::Prob(int n, int j0, int j1) const{
+    //need to compute binomial coefficients -- there's a function on the way!
+}

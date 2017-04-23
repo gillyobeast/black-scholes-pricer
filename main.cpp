@@ -4,10 +4,18 @@
 #include <sstream>
 #include "Project.h"
 #include "calibration.h"
+#include "binomial.h"
 
 using namespace std;
 
+class Function{
+public:
+    double Value(double x, double q0, vector<double> S(int n, int j0, int j1)) {
+    return (1-q0)*(1-x)*S(1,0,0)[1]+q0*(1-x)*S(1,1,0)[1]
+                            +(1-q0)*x*S(1,0,1)[1]+q0*x*S(1,1,1)[1];
+    }
 
+};
 
 int main()
 {
@@ -33,11 +41,11 @@ int main()
 
     double t = .25; //getTime();            // commented out for testing reasons
     vector<double> r0=logReturns(s0), r1=logReturns(s1);
-    double sampleVar0=sampleVar(r0),sampleVar1=sampleVar(r1);
+    double sampleVar0=sampleVar(r0),sampleVar1=sampleVar(r1);        //rewrite these functions to take and recieve vectors of vector<double>s
     double sampleCov=sampleCovar(r0,r1);
     double historicalVolatility0 = sqrt(sampleVar0/t);
     double historicalVolatility1 = sqrt(sampleVar1/t);
-    vector<double> historicalVolatility;
+    vector<double> historicalVolatility;                            // fair bit of overhead here. clear up.
     historicalVolatility.push_back(historicalVolatility0);
     historicalVolatility.push_back(historicalVolatility1);
     double historicalCorrelation = sampleCov / (t*historicalVolatility0*historicalVolatility1);
@@ -71,7 +79,16 @@ int main()
     }
     double h = 1;//getTime();
     CorrBinModel binModel(model,h);                         //creates corr bin model with given params
+    cout << binModel.Get_q() << endl;
+    while(binModel.IsArbitrageFree()==0) {
+        cout << "There is arbitrage. Closing program." << endl;
+        return 1;
+    }
 
-
+    for(int i=1; i <10;i++){
+        for (int j=0;j<i+1;j++){
+                cout << "("<<i<<","<<j<<"):"<<binomial(i,j) << endl;
+        }
+    }
 
 }
