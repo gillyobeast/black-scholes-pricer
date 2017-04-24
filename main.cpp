@@ -4,74 +4,64 @@
 #include <sstream>
 #include "Project.h"
 #include "calibration.h"
-#include "binomial.h"
 
 using namespace std;
 
-class Function{
-public:
-    double Value(double x, double q0, vector<double> S(int n, int j0, int j1)) {
-    return (1-q0)*(1-x)*S(1,0,0)[1]+q0*(1-x)*S(1,1,0)[1]
-                            +(1-q0)*x*S(1,0,1)[1]+q0*x*S(1,1,1)[1];
-    }
 
-};
 
 int main()
 {
     /** 1. MODEL CALIBRATION */
 
-    cout.precision(10);                 // ensures cout outputs doubles to a reasonable accuracy
-    ifstream data("data.csv");          // creates input stream object 'data' [if i make it fstream, it clears it after reading]
+    cout.precision(10);                       // ensures cout outputs doubles to a reasonable accuracy
+    ifstream data("data.csv");               // creates input stream object 'data' [if i make it fstream, it clears it after reading]
+
     string line, s0i, s1i;
-    vector<double> s0, s1;
+    vector<vector<double> > S(2);          // s[i][j] is gonna be S_{i,j}
 
-    while (getline(data, line)){        // stores each column in data in vectors s0,s1
-                                        // processes 'data' line by line - stores each line in 'line'
-        stringstream lineStream(line);  // creates stringstream obj 'lineStream' with contents of 'line'
+    while (getline(data, line)){             // stores each column in data in vectors s[0],s[1]
+                                             // processes 'data' line by line - stores each line in 'line'
+        stringstream lineStream(line);     // creates stringstream obj 'lineStream' with contents of 'line'
 
-        getline(lineStream,s0i,',' );   // separates 'line' into 's0i' and 's1i'
-        double ds0i = stod(s0i);        // converts to double
-        s0.push_back(ds0i);             // pushes onto end of s0
+        getline(lineStream,s0i,',' );       // separates 'line' into 's0i' and 's1i'
+        S[0].push_back(stod(s0i));           // converts to double and pushes onto end of s[0]
 
-        getline(lineStream,s1i);        // same as above three lines
-        double ds1i = stod(s1i);
-        s1.push_back(ds1i);             /// THIS IS V MESSY AND I HATE IT but i can't get it to work outside of main
+        getline(lineStream,s1i);             // same as above two lines
+        S[1].push_back(stod(s1i));       /// THIS IS V MESSY AND I HATE IT but i can't get it to work outside of main
     }
 
-    double t = .25; //getTime();            // commented out for testing reasons
-    vector<double> r0=logReturns(s0), r1=logReturns(s1);
-    double sampleVar0=sampleVar(r0),sampleVar1=sampleVar(r1);        //rewrite these functions to take and recieve vectors of vector<double>s
-    double sampleCov=sampleCovar(r0,r1);
-    double historicalVolatility0 = sqrt(sampleVar0/t);
-    double historicalVolatility1 = sqrt(sampleVar1/t);
-    vector<double> historicalVolatility;                            // fair bit of overhead here. clear up.
-    historicalVolatility.push_back(historicalVolatility0);
-    historicalVolatility.push_back(historicalVolatility1);
-    double historicalCorrelation = sampleCov / (t*historicalVolatility0*historicalVolatility1);
+    double t = .25; //getTime();                    // commented out for testing reasons
+    vector<vector <double> > R=logReturns(S);     // R stores log returns
+
+    vector<double> sampleVariance=sampleVar(R);
+    double sampleCovariance=sampleCovar(R);
+    vector<double> historicalVolatility;
+    for(int i =0;i<2;i++){
+        historicalVolatility.push_back(sqrt(sampleVariance[i]/t));
+    }
+    double historicalCorrelation = sampleCovariance / (t*historicalVolatility[0]*historicalVolatility[1]);
 
     cout << "Historical Volatilities:   "  << historicalVolatility[0] << endl
-          << "                           "  << historicalVolatility[1] << endl;
+         << "                           "  << historicalVolatility[1] << endl;
     cout << "Historical Correlation:    "  << historicalCorrelation << endl;
 
 
 
 
     /** 2. TWO-DIMENSIONAL BLACK-SCHOLES MODEL */
-    double stock0=100, stock1=100, rate=0.05;  // note to self: remove these definitions and uncomment following
-    vector<double> stockCurrent;
+    double rate=0.05;  // note to self: remove these definitions and uncomment following
+    vector<double> stockCurrent(2,100);
 
-
+    /// make a 'getInput(stockCurrent,rate)' fn and make it do validation
 //    cout << "Please provide values for initial stock prices and interest rate." << endl;
 //    cout << "Current stock price of S0:" << endl;
-//    cin  >> stock0;
+//    cin  >> stockCurrent[0];
 //    cout << "Current stock price of S1:" << endl;
-//    cin  >> stock1;
+//    cin  >> stockCurrent[1];
 //    cout << "Interest Rate (as decimal value):" << endl;
 //    cin  >> rate;
 
 
-    stockCurrent.push_back(stock0); stockCurrent.push_back(stock1);
     BSModel2 model(stockCurrent, rate, historicalVolatility, historicalCorrelation);    //creates bs model with given params
     while (model.IsWellDefined()==0){                   // validation
         cout << "Please enter valid data." << endl;
@@ -84,11 +74,7 @@ int main()
         cout << "There is arbitrage. Closing program." << endl;
         return 1;
     }
+    cout << binModel.Prob(10,10,11);
 
-    for(int i=1; i <10;i++){
-        for (int j=0;j<i+1;j++){
-                cout << "("<<i<<","<<j<<"):"<<binomial(i,j) << endl;
-        }
-    }
 
 }
