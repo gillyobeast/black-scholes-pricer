@@ -8,7 +8,15 @@
 using namespace std;
 
 
-
+class spreadCall: public Payoff{
+public:
+    double Value(vector<double> S){
+        return 0;
+    }
+    void set_K(double _K){K=_K;}
+private:
+    double K; // strike price
+};
 
 BSModel2::BSModel2(vector<double> S0_, double r_, vector<double> sigma_, double rho_)
                     :S0(S0_),r(r_),sigma(sigma_),rho(rho_){}    ///using initializer list
@@ -38,13 +46,13 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
     beta.push_back(sigma[1]*rho*rooth);
     beta.push_back(sigma[1]*sqrt((1-rho*rho*h)));
 
-    double discount = exp(r*h);
+    long double discount = exp(r*h);
 
     q.resize(2);
     q[0] = (discount*S0[0]-S(1,0,0)[0])/(S(1,1,0)[0]-S(1,0,0)[0]);
                     /// used the rearranged form from hint
 
-    q[1] = 0.50; // until i can figure out what to do here
+    q[1] = 0.50;    // until i can figure out what to do here
 
 
 
@@ -58,7 +66,7 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
 vector<double> CorrBinModel::S (int n, int j0, int j1) const{
     vector<double> _S;
     _S.push_back(S0[0]*exp(alpha[0]*n+beta[0]*(2*j0-n)));
-    _S.push_back(S0[1]*exp(alpha[1]*n+beta[1]*(2*j0-n)+beta[2]*(2*j0-n)));
+    _S.push_back(S0[1]*exp(alpha[1]*n+beta[1]*(2*j0-n)+beta[2]*(2*j1-n)));
     return _S;
 }
 
