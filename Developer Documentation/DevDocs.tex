@@ -1,0 +1,70 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{color}
+
+\lstset{
+	basicstyle=\ttfamily,
+	language=C++,
+	backgroundcolor=\color[gray]{0.9}
+}
+
+\author{Luke Armitage}
+\title{Developer Documentation for Two-Dimensional Black-Scholes pricer}
+\begin{document}
+
+\maketitle
+
+
+
+
+
+
+
+
+\section{Analysis of \texttt{PriceAmerican} function}
+Part of the project brief is to analyse the function \texttt{PriceAmerican}. 
+Not sure what you mean by that, Alet. Here's the code from \texttt{Project.h}.
+\begin{lstlisting}
+inline double PriceAmerican (const CorrBinModel& model, 
+			     const Payoff& payoff, 
+			     int N)
+{
+    vector<vector<double> > v,pv;
+    vector<double> q = model.Get_q();
+    double d = exp(-model.Get_r()*model.Get_h()),
+           q00d = d*(1-q[0])*(1-q[1]),
+           q01d = d*(1-q[0])*q[1],
+           q10d = d*q[0]*(1-q[1]),
+           q11d = d*q[0]*q[1];
+    double ev,cv;
+    v.resize(N+1);
+    for(int j0=0; j0<=N; j0++)
+    {
+        v[j0].resize(N+1);
+        for(int j1=0; j1<=N; j1++)
+            v[j0][j1] = payoff.Value(model.S(N,j0,j1));
+    }
+    for(int n=N-1; n>=0; n--)
+    {
+        pv=v;
+        for(int j0=0;j0<=n;j0++)
+            for(int j1=0; j1 <= n; j1++)
+            {
+                ev = payoff.Value(model.S(n,j0,j1));
+                cv = q00d*pv[j0][j1]
+                   + q01d*pv[j0][j1+1]
+                   + q10d*pv[j0+1][j1]
+                   + q11d*pv[j0+1][j1+1];
+                v[j0][j1] = (ev>cv)?ev:cv;
+            }
+    }
+    return v[0][0];
+};
+\end{lstlisting}
+\end{document}

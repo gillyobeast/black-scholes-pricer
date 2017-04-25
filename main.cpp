@@ -28,8 +28,8 @@ using namespace std;
 int main()
 {
     vector<double> historicalVolatility;
-    vector<double> sampleVariance;
     double sampleCovariance;
+    vector<double> sampleVariance;
     double historicalCorrelation;
     cout.precision(10);                       // ensures cout outputs doubles to a reasonable accuracy
     /** 0. INTRODUCTION TO PROGRAM */
@@ -40,7 +40,7 @@ int main()
     /** 1. MODEL CALIBRATION */
                                         // check if file is opened correctly.
 
-    ifstream data("data.csv");               // creates input stream object 'data'
+    ifstream data("datacopy.csv");               // creates input stream object 'data'
     cout << "Opening historical stock data." << endl;
     if (data.fail()) {
         cout << "Error opening file. Closing program." << endl;
@@ -48,7 +48,7 @@ int main()
     }
     cout << "Success opening file. Calibrating model." << endl << endl;
     cout << "Please specify a time interval." << endl;
-    double t = 0.25; //getTime();
+    double t = getTime(0.25);
     vector<vector<double> > S(2);          // s[i][j] is gonna be S_{i,j}
     string line, s0i, s1i;
     while (getline(data, line)){             // stores each column in data in vectors s[0],s[1]
@@ -81,11 +81,8 @@ int main()
 //        cin  >> menu;
 //    switch(menu){
 //        case 1:{
-
 //            break;}
 //        case 0:{
-//
-//
 //            break;}
 //        default:{
 //            cout << "Please enter an option:" << endl;
@@ -103,8 +100,8 @@ int main()
 
     /** 2. TWO-DIMENSIONAL BLACK-SCHOLES MODEL */
                                 // note to self: remove these definitions and uncomment following
-    double rate = 0.05; // getRate();
-    vector<double> stockCurrent(2,100); // = getStock();
+    double rate = getRate(0.05);
+    vector<double> stockCurrent = getStock(100);
 
 
 
@@ -114,7 +111,7 @@ int main()
         cout << "Please enter valid data." << endl;
         return 1;
     }
-    double h = 10;//getTime();
+    double h = 1;//getTime();
 
                 //creates corr bin model with calibrated bs model and user entered time step.
     CorrBinModel binModel(model,h);
@@ -124,18 +121,7 @@ int main()
         exit(1);
     }
 
-    cout << "enter payoff time N:" << endl;
-    int N;
-    cin >>N;
-    for (int n=1; n<N;n++){
-        for (int j=0; j<n+1;j++){
-            for (int i = 0; i< N+1; i++){
-                cout << binModel.Prob(n,i,j) << ", "<< endl;
-            }
-            cout << "; "<<endl;
-        }
-        cout << endl<<endl;
-    }
+
 
 
 }

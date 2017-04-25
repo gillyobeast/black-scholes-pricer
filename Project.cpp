@@ -7,12 +7,15 @@
 #include "solver.h"
 using namespace std;
 
+/** this file implements member functions of classes
+    `BSModel2` and `CorrBinModel` defined in project.h,
+    and `PriceEuropean` function as required            */
 
-
-
+///Constructor.
 BSModel2::BSModel2(vector<double> S0_, double r_, vector<double> sigma_, double rho_)
-                    :S0(S0_),r(r_),sigma(sigma_),rho(rho_){}    ///using initializer list
+                    :S0(S0_),r(r_),sigma(sigma_),rho(rho_){}
 
+///Returns 1 if model parameters satisfy the requirements stated in the model, otherwise 0.
 bool BSModel2::IsWellDefined() const{
     cout << "Validating Black-Scholes model data." << endl;
     if (S0[0] <= 0||S0[1]<=0) {
@@ -41,8 +44,8 @@ bool BSModel2::IsWellDefined() const{
 CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0()),r(model.Get_r()),h(h_){
 
     vector<double> sigma = model.Get_sigma();
-    double rho = model.Get_rho();                   /// so we only have to fetch rho and sigma once
-    double rooth = sqrt(h);                         /// and calculate sqrt(h) once
+    double rho = model.Get_rho();                   // so we only have to fetch rho and sigma once
+    double rooth = sqrt(h);                         // and calculate sqrt(h) once
 
     for(int i=0;i<2;i++){
         double drift=(r-0.5*sigma[i]*sigma[i])*h;
@@ -55,21 +58,20 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
 
     long double discount = exp(r*h);
 
-    q.resize(2);
+
 
     /// used the rearranged form from hint
 
-    q[0] = (discount*S0[0]-S(1,0,0)[0])/(S(1,1,0)[0]-S(1,0,0)[0]);
+    q.push_back((discount*S0[0]-S(1,0,0)[0])/(S(1,1,0)[0]-S(1,0,0)[0]));
     //doesn't seem to depend on h...
 
     //this is the messiest thing ever but its the only way i can think to do it
     Func myFunction(q[0],S(1,0,0)[1],S(1,0,1)[1],S(1,1,0)[1],S(1,1,1)[1]);
-    q[1] = SolveByBisect(&myFunction,discount*S0[1],0,1,EPSILON);
+    double target = discount*S0[1];
+    q.push_back(SolveByBisect(&myFunction,target,0,1,EPSILON));
 
 
 }
-//  function to solve:    return (1-q0)*(1-x)*S(1,0,0)[1]+q0*(1-x)*S(1,1,0)[1]
-//                              +(1-q0)*x*S(1,0,1)[1]+q0*x*S(1,1,1)[1];
 
 
 
@@ -95,3 +97,11 @@ double CorrBinModel::Prob(int n, int j0, int j1) const{
     return binomial(n,j0)*binomial(n,j1)*pow(q[0],j0)*pow(1-q[0],n-j0)*pow(q[1],j1)*pow(1-q[1],n-j1);
 
 }
+
+
+double PriceEuropean(const CorrBinModel& model, const Payoff& payoff, int N){
+
+
+
+
+};

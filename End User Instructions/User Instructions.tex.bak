@@ -1,0 +1,22 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{color}
+
+\lstset{
+	basicstyle=\ttfamily,
+	language=C++,
+	backgroundcolor=\color[gray]{0.9}
+}
+
+\author{Luke Armitage}
+\title{End-User Instructions for Two-Dimensional Black-Scholes pricer}
+\begin{document}
+\maketitle
+stuff
+\end{document}

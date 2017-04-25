@@ -21,6 +21,14 @@ inline double getTime(){
     }
     return _t;
 }
+//overloaded version to allow internal parameter setting, for testing
+inline double getTime(double _t){
+    cout << _t << endl;
+    while (_t<=0){
+        cout << "Time step should be positive." << endl;
+    }
+    return _t;
+}
 
 /// has user enter an ordered pair of current stock prices
 inline vector<double> getStock(){
@@ -40,6 +48,13 @@ inline vector<double> getStock(){
     }
     return _stock;
 }
+//overloaded version to allow internal parameter setting, for testing
+inline vector<double> getStock(double _price){
+    while (_price<=0){cout<< "Current stock prices must be positive decimal values." << endl;}
+    vector<double> _stock(2,_price);
+    cout << _stock << endl;
+    return _stock;
+}
 
 /// has user enter a non-negative interest rate
 inline double getRate(){
@@ -50,6 +65,15 @@ inline double getRate(){
         cout << "Interest Rate must be a non-negative decimal value." << endl;
         cout << "Please enter non-negative interest rate (as decimal value):" << endl;
         cin  >> _rate;
+    }
+    return _rate;
+}
+//overloaded version to allow internal parameter setting, for testing
+inline double getRate(double _rate){
+
+    cout << _rate << endl;
+    while(_rate <0){
+        cout << "Interest Rate must be a non-negative decimal value." << endl;
     }
     return _rate;
 }
