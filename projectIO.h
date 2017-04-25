@@ -3,17 +3,16 @@
 
 /** this file is for I/O stuff used throughout the project */
 
-inline double stod(string _s) {            // std::stod doesn't work!! converts string to decimal
+///converts string to decimal
+inline double stod(string _s) {            // std::stod doesn't work!!
     double _d;
     stringstream _ss(_s);
     _ss >> _d;
     return _d;
 }
 
-
-
-
-inline double getTime(){                   // has user input a positive time in years
+/// has user input a positive time in years
+inline double getTime(){
     double _t=0;
     while (_t<=0){
         cout << "Enter (positive) time step, in years: " << endl;
@@ -23,7 +22,8 @@ inline double getTime(){                   // has user input a positive time in 
     return _t;
 }
 
-inline vector<double> getStock(){          // has user enter an ordered pair of current stock prices
+/// has user enter an ordered pair of current stock prices
+inline vector<double> getStock(){
     vector<double> _stock(2);
     cout << "Please provide positive values for current stock prices." << endl;
     cout << "Current stock price of S0:" << endl;
@@ -41,7 +41,8 @@ inline vector<double> getStock(){          // has user enter an ordered pair of 
     return _stock;
 }
 
-inline double getRate(){                   // has user enter a non-negative interest rate
+/// has user enter a non-negative interest rate
+inline double getRate(){
     double _rate;
     cout << "Please enter non-negative interest rate (as decimal value):" << endl;
     cin  >> _rate;

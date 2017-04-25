@@ -6,6 +6,7 @@
 #include "Project.h"        // compulsory header file
 #include "projectIO.h"      // header of i/o stuff used throughout
 #include "calibration.h"    // header of model calibration functions
+#include "payoff.h"         // header of payoff functions
 
 using namespace std;
 
@@ -47,7 +48,7 @@ int main()
     }
     cout << "Success opening file. Calibrating model." << endl << endl;
     cout << "Please specify a time interval." << endl;
-    double t = getTime();
+    double t = 0.25; //getTime();
     vector<vector<double> > S(2);          // s[i][j] is gonna be S_{i,j}
     string line, s0i, s1i;
     while (getline(data, line)){             // stores each column in data in vectors s[0],s[1]
@@ -101,9 +102,9 @@ int main()
 
 
     /** 2. TWO-DIMENSIONAL BLACK-SCHOLES MODEL */
-                                                  // note to self: remove these definitions and uncomment following
-    double rate= getRate();
-    vector<double> stockCurrent = getStock();
+                                // note to self: remove these definitions and uncomment following
+    double rate = 0.05; // getRate();
+    vector<double> stockCurrent(2,100); // = getStock();
 
 
 
@@ -113,7 +114,7 @@ int main()
         cout << "Please enter valid data." << endl;
         return 1;
     }
-    double h = 1;//getTime();
+    double h = 10;//getTime();
 
                 //creates corr bin model with calibrated bs model and user entered time step.
     CorrBinModel binModel(model,h);
@@ -123,6 +124,18 @@ int main()
         exit(1);
     }
 
+    cout << "enter payoff time N:" << endl;
+    int N;
+    cin >>N;
+    for (int n=1; n<N;n++){
+        for (int j=0; j<n+1;j++){
+            for (int i = 0; i< N+1; i++){
+                cout << binModel.Prob(n,i,j) << ", "<< endl;
+            }
+            cout << "; "<<endl;
+        }
+        cout << endl<<endl;
+    }
 
 
 }
