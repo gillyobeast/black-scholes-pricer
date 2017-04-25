@@ -23,7 +23,7 @@ using namespace std;
 //        getline(_lineStream,_col1);
 //        _output[1].push_back(stod(_col1));
 //    }
-//}
+//}     //gives an ios.h error FeelsBadMan
 
 int main()
 {
@@ -40,15 +40,17 @@ int main()
     /** 1. MODEL CALIBRATION */
                                         // check if file is opened correctly.
 
-    ifstream data("datacopy.csv");               // creates input stream object 'data'
+    ifstream data("data.csv");               // creates input stream object 'data'
     cout << "Opening historical stock data." << endl;
     if (data.fail()) {
         cout << "Error opening file. Closing program." << endl;
         exit(1);
     }
     cout << "Success opening file. Calibrating model." << endl << endl;
+
     cout << "Please specify a time interval." << endl;
-    double t = getTime(0.25);
+    double t = getTime();
+
     vector<vector<double> > S(2);          // s[i][j] is gonna be S_{i,j}
     string line, s0i, s1i;
     while (getline(data, line)){             // stores each column in data in vectors s[0],s[1]
@@ -100,8 +102,8 @@ int main()
 
     /** 2. TWO-DIMENSIONAL BLACK-SCHOLES MODEL */
                                 // note to self: remove these definitions and uncomment following
-    double rate = getRate(0.05);
-    vector<double> stockCurrent = getStock(100);
+    double rate = getRate();
+    vector<double> stockCurrent = getStock();
 
 
 
@@ -111,7 +113,7 @@ int main()
         cout << "Please enter valid data." << endl;
         return 1;
     }
-    double h = 1;//getTime();
+    double h = getTime();
 
                 //creates corr bin model with calibrated bs model and user entered time step.
     CorrBinModel binModel(model,h);
@@ -121,6 +123,20 @@ int main()
         exit(1);
     }
 
+    minCall myMinCall;
+    maxCall myMaxCall;
+    spreadCall mySpreadCall;
+    Payoff * myMinCallPayoff = &myMinCall;
+    Payoff * myMaxCallPayoff = &myMaxCall;
+    Payoff * mySpreadCallPayoff = &mySpreadCall;
+    for (double i=-100;i<500;i+=10) {
+        myMinCall.set_K(i);
+        myMaxCall.set_K(i);
+        mySpreadCall.set_K(i);
+        cout << i << ", " << PriceAmerican(binModel,*myMinCallPayoff,10)<<endl;
+        cout << i << ", " << PriceAmerican(binModel,*myMaxCallPayoff,10)<<endl;
+        cout << i << ", " << PriceAmerican(binModel,*mySpreadCallPayoff,10)<<endl<<endl;
+    }
 
 
 

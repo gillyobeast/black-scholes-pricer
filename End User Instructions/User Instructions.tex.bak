@@ -7,16 +7,34 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{color}
-
+\usepackage{todonotes}
 \lstset{
 	basicstyle=\ttfamily,
 	language=C++,
 	backgroundcolor=\color[gray]{0.9}
 }
 
-\author{Luke Armitage}
-\title{End-User Instructions for Two-Dimensional Black-Scholes pricer}
+\author{It prices options! \\ Luke Armitage}\date{}
+\title{{\bfseries End-User Instructions} for~Two-Dimensional Black-Scholes model Option Pricer}
+
+
 \begin{document}
+
 \maketitle
-stuff
+This software \todo[inline]{describe what the program does.\\
+brief description of methods used in software.}
+
+
+\section{Running the software}
+Unzip the folder \texttt{[folder name].zip} into literally wherever.
+\todo[inline]{specify how to open and run software}
+
+
+\section{Calibrating the model}
+To calibrate the model, replace the file \texttt{data.csv}, found in the main directory, with your historical stock prices in \texttt{.csv} file format. Upon running the program, you will be prompted to specify a time interval, which is the period between recorded historical stock prices. 
+
+The error message ``\texttt{Error opening file. Closing program.}'' means that the program could not find the file \texttt{data.csv}. Please ensure the historical stock data is in the correct file format and saved in the correct directory.
+
+
+
 \end{document}

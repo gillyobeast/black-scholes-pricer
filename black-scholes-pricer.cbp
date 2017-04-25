@@ -32,7 +32,22 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Project.cpp" />
+		<Unit filename="Project.h" />
+		<Unit filename="\\userfs\la725\w2k\uni\4th year\c++ module\black-scholes-pricer\solver.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="binomial.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="calibration.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="payoff.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="projectIO.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

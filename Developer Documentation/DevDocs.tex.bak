@@ -7,22 +7,30 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{color}
-
+\usepackage{todonotes}
 \lstset{
 	basicstyle=\ttfamily,
 	language=C++,
 	backgroundcolor=\color[gray]{0.9}
 }
 
-\author{Luke Armitage}
-\title{Developer Documentation for Two-Dimensional Black-Scholes pricer}
+\author{It prices options! \\ Luke Armitage}\date{}
+\title{{\bfseries Developer Documentation} for~Two-Dimensional Black-Scholes model Option Pricer}
+
+
 \begin{document}
 
 \maketitle
 
+\todo[inline]{introduce software. \\ 
+list and details of headers, classes, functions and variables. \\
+detail how to add new payoff functions. \\
+detail nonlinear solver method used in 3.\\
+report on test runs of code.}
+\textsc{Disclaimer}: All code was written by me except for \texttt{Project.h}, and the code in \texttt{solver.h} is based on the bisection method nonlinear solver found in \texttt{Solver03.h} provided as part of the course material.
 
-
-
+\todo[inline]{clever things i've done:\\
+overloading of 'get' functions, so you don't have to enter the same values again and again to test.}
 
 
 
@@ -30,6 +38,7 @@
 \section{Analysis of \texttt{PriceAmerican} function}
 Part of the project brief is to analyse the function \texttt{PriceAmerican}. 
 Not sure what you mean by that, Alet. Here's the code from \texttt{Project.h}.
+\todo[inline]{analyse \texttt{PriceAmerican}}
 \begin{lstlisting}
 inline double PriceAmerican (const CorrBinModel& model, 
 			     const Payoff& payoff, 
