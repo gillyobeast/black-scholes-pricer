@@ -49,7 +49,7 @@ int main()
     cout << "Success opening file. Calibrating model." << endl << endl;
 
     cout << "Please specify a time interval." << endl;
-    double t = getTime();
+    double t = getTime(0.25);
 
     vector<vector<double> > S(2);          // s[i][j] is gonna be S_{i,j}
     string line, s0i, s1i;
@@ -102,8 +102,8 @@ int main()
 
     /** 2. TWO-DIMENSIONAL BLACK-SCHOLES MODEL */
                                 // note to self: remove these definitions and uncomment following
-    double rate = getRate();
-    vector<double> stockCurrent = getStock();
+    double rate = getRate(0.05);
+    vector<double> stockCurrent = getStock(100);
 
 
 
@@ -113,7 +113,7 @@ int main()
         cout << "Please enter valid data." << endl;
         return 1;
     }
-    double h = getTime();
+    double h = getTime(0.25);
 
                 //creates corr bin model with calibrated bs model and user entered time step.
     CorrBinModel binModel(model,h);

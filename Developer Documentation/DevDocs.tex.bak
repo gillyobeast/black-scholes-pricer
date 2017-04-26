@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage[margin=2cm]{geometry}
 \usepackage{amsfonts}
@@ -11,7 +12,9 @@
 \lstset{
 	basicstyle=\ttfamily,
 	language=C++,
-	backgroundcolor=\color[gray]{0.9}
+	backgroundcolor=\color[gray]{0.9},
+	numbers=left, numberstyle=\footnotesize, stepnumber=5, 
+	numbersep = 5pt, numberfirstline=false, firstnumber=last
 }
 
 \author{It prices options! \\ Luke Armitage}\date{}
@@ -32,17 +35,34 @@ report on test runs of code.}
 \todo[inline]{clever things i've done:\\
 overloading of 'get' functions, so you don't have to enter the same values again and again to test.}
 
-
+\todo[inline]{analyse \texttt{PriceAmerican}}
 
 
 \section{Analysis of \texttt{PriceAmerican} function}
 Part of the project brief is to analyse the function \texttt{PriceAmerican}. 
-Not sure what you mean by that, Alet. Here's the code from \texttt{Project.h}.
-\todo[inline]{analyse \texttt{PriceAmerican}}
+Here's the code from \texttt{Project.h}, interspersed with my comments.
+
 \begin{lstlisting}
 inline double PriceAmerican (const CorrBinModel& model, 
 			     const Payoff& payoff, 
 			     int N)
+\end{lstlisting}
+This is the function declaration. 
+The function takes three arguments:
+\begin{itemize}
+	\item[\texttt{model}] -- a reference to a \texttt{CorrBinModel} object.
+	\item[\texttt{payoff}] -- a reference to a \texttt{Payoff} object, with a 
+member function \texttt{Value()} which returns the value of the payoff function 
+of the stock price $S$ at a given node $(j_0,j_1)$ in the binary tree model.
+	\item[\texttt{N}] -- the expiry date of the American option, the latest time at 
+which it can be exercised.
+\end{itemize}
+A function declared with the keyword \texttt{inline} suggests to the compiler that it may, if the function is ``small'' enough, insert the definition of the function `in-line', in place of the function call. This can speed up the program by reducing the number of times it needs to jump to the function definition and back, but at the cost of compile time and an increase in the size of the executable file. The keyword \texttt{const} means that the function should only access data members of each object without changing them -- for example to call the member function \texttt{Get\_q()} of the object \texttt{model}.
+
+
+
+Now for the function definition:
+\begin{lstlisting}
 {
     vector<vector<double> > v,pv;
     vector<double> q = model.Get_q();
@@ -53,12 +73,35 @@ inline double PriceAmerican (const CorrBinModel& model,
            q11d = d*q[0]*q[1];
     double ev,cv;
     v.resize(N+1);
+\end{lstlisting}
+
+The variable \texttt{d} corresponds to the discount term in the American option 
+model.
+The variable \texttt{q11d} corresponds to the discount term multiplied by the 
+probability of traversing from node $(j_0,j_1)$ at time step $n$ to node 
+$(j_0+1,j_1+1)$ at time step $n+1$ -- similarly for \texttt{q00d}, \texttt{q01d} 
+and \texttt{q10d}.
+Lines $5$ and $12$ define variables used later and line $13$ gives \texttt{v} 
+room to store all $N+1$ vectors of prices we'll be using.
+
+
+
+\begin{lstlisting}
     for(int j0=0; j0<=N; j0++)
     {
         v[j0].resize(N+1);
         for(int j1=0; j1<=N; j1++)
             v[j0][j1] = payoff.Value(model.S(N,j0,j1));
     }
+\end{lstlisting}
+
+This nested \texttt{for} loop works its way through each vector in \texttt{v}, 
+resizes it to $N+1$ elements and then sets each element \texttt{v[j0][j1]} to 
+the payoff at the node $(j_0,j_1)$ at time step $N$.
+Then \texttt{v} becomes an $N+1$-by-$N+1$ `matrix', holding all the payoff 
+values at the expiry time.
+
+\begin{lstlisting}    
     for(int n=N-1; n>=0; n--)
     {
         pv=v;
@@ -76,4 +119,11 @@ inline double PriceAmerican (const CorrBinModel& model,
     return v[0][0];
 };
 \end{lstlisting}
+
+The \texttt{for} loop on line $20$ means we're working our way backwards from the expiry date, so at each time step we are considering the first $n+1$ rows and $n+1$ columns of \texttt{v} -- and at the $n=0$ step, we are considering the single value \texttt{v[0][0]}, which is then returned by the function after the loop ends.
+
+The assignment \texttt{pv=v} stores in \texttt{pv} the state of \texttt{v} at the beginning of each run through the loop, which is necessary because we will be changing the values during each run depending on the state of \texttt{v} after the previous cycle.
+
+The nested \texttt{for} loop runs through the $n+1$-by-$n+1$ submatrix of \texttt{v}, following the same procedure at each node $(j_0,j_1)$ (for $j_0,j_1=1,\dots,n$). First, \texttt{ev} stores the payoff for exercising at the node $(j_0,j_1)$ and time $n$, and \texttt{cv} stores the potential future return. This is calculated by summing, over the four successor nodes, the probability of moving to that node multiplied by the payoff corresponding to that node -- which is stored in \texttt{pv}.
+The statement \texttt{v[j0][j1] = (ev>cv)?ev:cv} means that the program will compa
 \end{document}

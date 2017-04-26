@@ -47,8 +47,10 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
     double rho = model.Get_rho();                   // so we only have to fetch rho and sigma once
     double rooth = sqrt(h);                         // and calculate sqrt(h) once
 
+    double drift;
+
     for(int i=0;i<2;i++){
-        double drift=(r-0.5*sigma[i]*sigma[i])*h;
+        drift =(r-0.5*sigma[i]*sigma[i])*h;
         alpha.push_back(drift);
     }
 
