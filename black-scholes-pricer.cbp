@@ -34,6 +34,9 @@
 		</Compiler>
 		<Unit filename="Project.cpp" />
 		<Unit filename="Project.h" />
+		<Unit filename="\\userfs\la725\w2k\uni\4th year\c++ module\black-scholes-pricer\pricer.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="\\userfs\la725\w2k\uni\4th year\c++ module\black-scholes-pricer\solver.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>

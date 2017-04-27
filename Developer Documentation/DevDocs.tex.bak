@@ -35,12 +35,11 @@ report on test runs of code.}
 \todo[inline]{clever things i've done:\\
 overloading of 'get' functions, so you don't have to enter the same values again and again to test.}
 
-\todo[inline]{analyse \texttt{PriceAmerican}}
 
 
 \section{Analysis of \texttt{PriceAmerican} function}
 Part of the project brief is to analyse the function \texttt{PriceAmerican}. 
-Here's the code from \texttt{Project.h}, interspersed with my comments.
+It calculates a fair price for an American style option based on a given correlated binary model and payoff function.
 
 \begin{lstlisting}
 inline double PriceAmerican (const CorrBinModel& model, 
@@ -125,5 +124,7 @@ The \texttt{for} loop on line $20$ means we're working our way backwards from th
 The assignment \texttt{pv=v} stores in \texttt{pv} the state of \texttt{v} at the beginning of each run through the loop, which is necessary because we will be changing the values during each run depending on the state of \texttt{v} after the previous cycle.
 
 The nested \texttt{for} loop runs through the $n+1$-by-$n+1$ submatrix of \texttt{v}, following the same procedure at each node $(j_0,j_1)$ (for $j_0,j_1=1,\dots,n$). First, \texttt{ev} stores the payoff for exercising at the node $(j_0,j_1)$ and time $n$, and \texttt{cv} stores the potential future return. This is calculated by summing, over the four successor nodes, the probability of moving to that node multiplied by the payoff corresponding to that node -- which is stored in \texttt{pv}.
-The statement \texttt{v[j0][j1] = (ev>cv)?ev:cv} means that the program will compa
+The statement \texttt{v[j0][j1] = (ev>cv)?ev:cv} means that the program will compare the values of \texttt{ev} and \texttt{cv}, and store the greater of the two in \texttt{v[j0][j1]}.
+
+In this way, the function calculates the payoffs for all nodes at each time step $n$ and then returns the value it calculates for the first node $(0,0)$ at time $0$ -- the fair price of the American option.
 \end{document}

@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage[margin=2cm]{geometry}
 \usepackage{amsfonts}
@@ -11,7 +12,9 @@
 \lstset{
 	basicstyle=\ttfamily,
 	language=C++,
-	backgroundcolor=\color[gray]{0.9}
+	backgroundcolor=\color[gray]{0.9},
+	numbers=left, numberstyle=\footnotesize, stepnumber=5, 
+	numbersep = 5pt, numberfirstline=false, firstnumber=last
 }
 
 \author{It prices options! \\ Luke Armitage}\date{}
