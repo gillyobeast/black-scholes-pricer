@@ -16,9 +16,7 @@ double PriceEuropean(const CorrBinModel& model, const Payoff& payoff, int N){
             _sum += model.Prob(N,j0,j1)
                   *payoff.Value(model.S(N,j0,j1));
         }
-
     return _sum*exp(-model.Get_r()*model.Get_h()*N);
-
 };
 
 #endif // PRICER_H_INCLUDED

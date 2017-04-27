@@ -39,7 +39,7 @@ bool BSModel2::IsWellDefined() const{
         cout << "Error with calibration data: Historical Correlation. Closing program." << endl;
     return 0;
     }
-    cout << "Black-Scholes model validated." << endl;
+    cout << "Black-Scholes model validated." << endl << endl;
     return 1;
 }
 
@@ -69,10 +69,8 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
 
 
 
-    /// used the rearranged form from hint
-
     q.push_back((discount*S0[0]-S(1,0,0)[0])/(S(1,1,0)[0]-S(1,0,0)[0]));
-    //doesn't seem to depend on h...
+
 
     //this is the messiest thing ever but its the only way i can think to do it
     Func myFunction(q[0],S(1,0,0)[1],S(1,0,1)[1],S(1,1,0)[1],S(1,1,1)[1]);
@@ -116,11 +114,13 @@ bool CorrBinModel::IsArbitrageFree() const{
     @param j1 second coord of node
     @return risk-neutral probability of node (j0,j1) time step n
 */
-
 double CorrBinModel::Prob(int n, int j0, int j1) const{
-
-    return binomial(n,j0)*binomial(n,j1)*pow(q[0],j0)*pow(1-q[0],n-j0)*pow(q[1],j1)*pow(1-q[1],n-j1);
-
+    return binomial(n,j0)
+            *binomial(n,j1)
+            *pow(q[0],j0)
+            *pow(1-q[0],n-j0)
+            *pow(q[1],j1)
+            *pow(1-q[1],n-j1);
 }
 
 

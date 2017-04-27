@@ -4,21 +4,22 @@
 /** this file contains I/O stuff used throughout the project */
 
 
-//vector<vector<double> > ifstreamToVector(ifstream _input){
-//    string _line, _col0, _col1;
-//    vector<vector<double> > _output(2);
-//    while (getline(_input, _line)){
-//
-//        stringstream _lineStream(_line);
-//
-//        getline(_lineStream,_col0,',' );
-//        _output[0].push_back(stod(_col0));
-//
-//        getline(_lineStream,_col1);
-//        _output[1].push_back(stod(_col1));
-//    }
-//}     // gives an ios_base.h error FeelsBadMan
+/* //attempt at ifstreamToVector(). gives an ios_base.h error. FeelsBadMan
+vector<vector<double> > ifstreamToVector(ifstream _input){
+    string _line, _col0, _col1;
+    vector<vector<double> > _output(2);
+    while (getline(_input, _line)){
 
+        stringstream _lineStream(_line);
+
+        getline(_lineStream,_col0,',' );
+        _output[0].push_back(stod(_col0));
+
+        getline(_lineStream,_col1);
+        _output[1].push_back(stod(_col1));
+    }
+}
+*/
 
 /**
     Takes a string object and returns a double object.
@@ -107,6 +108,33 @@ inline double getRate(double _rate){
     return _rate;
 }
 
-
+/**
+    Gets an increasing pair of strike prices.
+    @return pair of stock prices, [0]<[1]
+*/
+vector<double> getStrike(){
+    vector <double> _strike(2);
+    cout << "Minimum strike price:" << endl;
+    cin  >> _strike[0];
+    cout << "Maximum strike price:" << endl;
+    cin  >> _strike[1];
+    while (_strike[0] >= _strike[1]){
+        cout << "Strike prices must be increasing." << endl;
+        cout << "Minimum strike price:" << endl;
+        cin  >> _strike[0];
+        cout << "Maximum strike price:" << endl;
+        cin  >> _strike[1];
+    }
+    return _strike;
+}
+//overloaded version to allow internal parameter setting, for testing
+vector<double> getStrike(double _price0, double _price1){
+    while (_price0 >= _price1){cout << "Strike prices must be increasing." << endl; exit(0);}
+    vector<double> _strike;
+    _strike.push_back(_price0);
+    _strike.push_back(_price1);
+    cout << _strike << endl;
+    return _strike;
+}
 
 #endif // PROJECTIO_H_INCLUDED

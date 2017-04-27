@@ -26,7 +26,7 @@
 \maketitle
 
 \todo[inline]{introduce software. \\ 
-list and details of headers, classes, functions and variables. \\
+what's in the box?\\
 detail how to add new payoff functions. \\
 detail nonlinear solver method used in 3.\\
 report on test runs of code.}
@@ -34,12 +34,17 @@ report on test runs of code.}
 
 \todo[inline]{clever things i've done:\\
 overloading of 'get' functions, so you don't have to enter the same values again and again to test.}
-
-
+\section{What's in the box?}
+%% list and details of headers, classes, functions and variables. 
+%% headers ordered by name, other stuff ordered by appearance
+\subsection{\texttt{binomial.h}}
+\begin{itemize}
+	\item[\texttt{binomial}] a function which calculates the binomial coefficent $n\choose k$. Takes arguments \texttt{int n} and \texttt{int k}.
+\end{itemize}
 
 \section{Analysis of \texttt{PriceAmerican} function}
 Part of the project brief is to analyse the function \texttt{PriceAmerican}. 
-Here's the code from \texttt{Project.h}, interspersed with my comments.
+It calculates a fair price for an American style option based on a given correlated binary model and payoff function.
 
 \begin{lstlisting}
 inline double PriceAmerican (const CorrBinModel& model, 

@@ -15,7 +15,7 @@ using namespace std;
 int main()
 {
 
-    cout.precision(10);                       // ensures cout outputs doubles to a reasonable accuracy
+    cout.precision(10);                     // ensures cout outputs doubles to a reasonable accuracy
     /** INTRODUCTION TO PROGRAM */
     cout << "Welcome to the two-dimensional Black-Scholes model option pricer!" << endl;
     cout << "It prices options!" << endl << endl;
@@ -31,11 +31,11 @@ int main()
     }
     cout << "Success opening file. Calibrating model." << endl;
     cout << "Please specify the time interval for the historical data." << endl;
-    double t = getTime(0.25);
+double t = getTime(0.25);
 
 //    vector<vector<double> > S = ifstreamToVector(data);
     vector<vector<double> > S(2);
-    string line, s0i, s1i;
+    string line, s0i, s1i; // s0i is stock 0 at time i, &c
     while (getline(data, line)){    //does the job of ifstreamToVector() as i can't get a definition of it to work outside of main.
         stringstream lineStream(line);
         getline(lineStream,s0i, ',');
@@ -79,8 +79,8 @@ int main()
 
 
 
-    double rate = getRate(0.05);
-    vector<double> stockCurrent = getStock(100);
+double rate = getRate(0.05);
+vector<double> stockCurrent = getStock(100);
 
 
 
@@ -96,20 +96,17 @@ int main()
 
 
 
-    /*ofstream Eprices("Eprices.csv"), Aprices("Aprices.csv");*/
-    //save writing to these till i get the next bit right.
-    //note: change 'cout' to 'Eprices' or 'Aprices' as needed.
+
     cout << "Please enter an expiry date for the option." << endl;
-    int expiry = getTime(10);
+int expiry = getTime(10);
 
-                    //creates corr bin model with calibrated bs model and user entered time step.
+    MinCall min_call; min_call.set_K(100);
+    MaxCall max_call; max_call.set_K(100);
+    SpreadCall spread_call; min_call.set_K(100);
+    Payoff* chosen_payoff;
 
 
-    // there is a clever way of making it do the option that the user enters.
-    // i can't think what it would be.
-    //vector<Payoff*> options = (SpreadCall, MinCall, MaxCall);
-
-    int payoff_choice=-1;
+    int payoff_choice=2;
     while (payoff_choice < 1 || payoff_choice > 3){
         cout << "Please choose an option payoff:" << endl;
         cout << "   1. Spread call." << endl;
@@ -117,18 +114,70 @@ int main()
         cout << "   3. Max call." << endl;
         cin  >> payoff_choice;
     }
-    cout << "Please enter a minimum strike price:" << endl;
-    double strike_min;
-    cin  >> strike_min;
-    cout << "Please enter a maximum strike price:" << endl;
-    double strike_max;
-    cin  >> strike_max;
-    cout << "Thank you. Calculating European option prices." << endl;
-    if (payoff_choice = 1){
-
-        CorrBinModel binModel(model,expiry/(100));
-
+    if (payoff_choice == 1){
+        chosen_payoff = &spread_call;
+        cout << "Pricing with 'spread call' payoff function." << endl;
+    } else if (payoff_choice == 2){
+        chosen_payoff = &min_call;
+        cout << "Pricing with 'min call' payoff function." << endl;
+    } else if (payoff_choice == 3){
+        chosen_payoff = &max_call;
+        cout << "Pricing with 'max call' payoff function." << endl;
     }
+
+vector<double> strikes = getStrike(100,200);
+
+    cout << "Calculating European option prices. Please wait." << endl;
+    string euro_filename = "Eprices.csv";
+    ofstream Eprices(euro_filename.c_str());
+    for (int j=1; j <= 5; j++){ // for loop preparing column headings
+        Eprices << ",N=" << 100*j;
+    } Eprices << endl;
+    // for loop writing to ith row of table
+    for (double i = 0; i <= 10; i++){
+        double strike = (i/10) * strikes[1] + (1-i/10) * strikes[0];
+        min_call.set_K(strike);     // this is necessary because Payoff has no get_K() member.
+        max_call.set_K(strike);     // could otherwise have used '&chosen_payoff->set_K(strike);'
+        spread_call.set_K(strike);
+        Eprices << "K=" << strike;
+        //for loop writing to jth column of table
+        for (double j = 1; j <= 5; j++){
+            CorrBinModel binModel(model,expiry/(100*j));
+            Eprices << "," << PriceEuropean(binModel, *chosen_payoff, 100*j);
+            cout << ".";
+        }
+        Eprices << endl;
+        cout << endl;
+    }
+    Eprices.close();
+    cout << "Done. European option prices can be found in '" << euro_filename << "'" << endl << endl;
+
+
+    cout << "Calculating American option prices. Please wait." << endl;
+    string amer_filename = "Aprices.csv";
+    ofstream Aprices(amer_filename.c_str());
+    for (int j=1; j <= 5; j++){ // for loop preparing column headings
+        Aprices << ",N=" << 100*j;
+    } Aprices << endl;
+    // for loop writing to ith row of table
+    for (double i = 0; i <= 10; i++){
+        double strike = (i/10) * strikes[1] + (1-i/10) * strikes[0];
+        min_call.set_K(strike);
+        max_call.set_K(strike);
+        spread_call.set_K(strike);
+        Aprices << "K=" << strike;
+        //for loop writing to jth column of table
+        for (double j = 1; j <= 5; j++){
+            CorrBinModel binModel(model,expiry/(100*j));
+            Aprices << "," << PriceAmerican(binModel, *chosen_payoff, 100*j);
+            cout << ".";
+
+        }
+        Aprices << endl;
+        cout << endl;
+    }
+    Aprices.close();
+    cout << "Done. American option prices can be found in '" << amer_filename << "'" << endl << endl;
 
 
 
