@@ -36,7 +36,7 @@ This program is designed to the specification provided as part of the project br
 
 
 \section{Running the software}
-Unzip the folder \texttt{[folder name].zip} into the desired directory, and find the executable file \texttt{black-scholes-pricer.exe} in the 
+Unzip the folder \texttt{'Luke Armitage 109031954 -- code and executable.zip'} into the desired directory, and find the executable file \texttt{black-scholes-pricer.exe} in the directory \texttt{`\textbackslash bin\textbackslash Release'}.
 
 
 \subsection{Calibrating the model}

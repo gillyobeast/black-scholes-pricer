@@ -22,7 +22,8 @@
 \author{\textit{It prices options!} 
 		\\ Luke Armitage}
 \date{}
-\title{{\bfseries End-User~Instructions}~for Two-Dimensional~Black-Scholes~Model Option~Pricer}
+\title{{\bfseries End-User~Instructions}~for Two-Dimensional~Black-Scholes~Model 
+Option~Pricer}
 
 
 \begin{document}
@@ -30,37 +31,73 @@
 \maketitle
 
 \section{Introduction}
-This program is designed to the specification provided as part of the project brief. It is designed to compute prices of American and European style stock options with a variety of payoff functions. It uses a two-dimensional Black-Scholes model, calibrated with historical stock data, and a discrete-time approximation of a continuous-time, two dimensional binary tree. It can output, to a spreadsheet, stock prices with strike prices in a given range, for a range of given maturity dates. 
+This program is designed to the specification provided as part of the project 
+brief. It is designed to compute prices of American and European style stock 
+options with a variety of payoff functions. It uses a two-dimensional 
+Black-Scholes model, calibrated with historical stock data, and a discrete-time 
+approximation of a continuous-time, two dimensional binary tree. It can output, 
+to a spreadsheet, stock prices with strike prices in a given range, for a range 
+of given maturity dates. 
 
 
 
 
 \section{Running the software}
-Unzip the folder \texttt{Luke Armitage 109031954 -- code and executable.zip} into the desired directory, and find the executable file \texttt{black-scholes-pricer.exe} in the directory \texttt{`\textbackslash bin\textbackslash Release'}.
+Unzip the folder \texttt{`Luke Armitage 109031954 -- code and executable.zip'} 
+into the desired directory, and find the executable file 
+\texttt{black-scholes-pricer.exe} in the directory \texttt{`\textbackslash 
+bin\textbackslash Release'}.
 
 
 \subsection{Calibrating the model}
-Before it can be used to price options, the model must be calibrated using historical stock data. 
-To calibrate the model, replace the file \texttt{data.csv}, found in the main directory, with your historical stock prices in \texttt{.csv} (comma delimited) file format. Upon running the program, you will be prompted to specify a time interval, which is the period between recorded historical stock prices. 
+Before it can be used to price options, the model must be calibrated using 
+historical stock data. 
+To calibrate the model, replace the file \texttt{data.csv}, found in the main 
+directory, with your historical stock prices in \texttt{.csv} (comma delimited) 
+file format. Upon running the program, you will be prompted to specify a time 
+interval, which is the period between recorded historical stock prices. 
 
-The error message ``\texttt{Error opening file. Closing program.}'' means that the program could not find the file \texttt{data.csv}. Please ensure the historical stock data is in the correct file format and saved in the correct directory.
+The error message ``\texttt{Error opening file. Closing program.}'' means that 
+the program could not find the file \texttt{data.csv}. Please ensure the 
+historical stock data is in the correct file format and saved in the correct 
+directory.
 
-After entering a time interval, the program will calculate the values from calibration from the given data. The program will confirm success and display the values in the following format:
+After entering a time interval, the program will calculate the values from 
+calibration from the given data. The program will confirm success and display 
+the values in the following format:
 \begin{lstlisting}
 Calibration values:
    Historical Volatility of S0:  <value>
                             S1:  <value>
    Historical Correlation:       <value>
 \end{lstlisting}
-The first two values are the variability of each of the two stocks, and the third value is the correlation between the logarithmic returns of the two stocks. This gives a measure of how closely related the stocks' prices are: the sign (positive or negative) of the correlation gives the direction of the relationship, and the absolute value gives how strong the relationship is.
+The first two values are the variability of each of the two stocks, and the 
+third value is the correlation between the logarithmic returns of the two 
+stocks. This gives a measure of how closely related the stocks' prices are: the 
+sign (positive or negative) of the correlation gives the direction of the 
+relationship, and the absolute value gives how strong the relationship is.
 
-Next, the program will prompt you for the interest rate and current values of each stock, and ensure that the values are valid. If there is an error with the model, the program will give an error message and quit.
+Next, the program will prompt you for the interest rate and current values of 
+each stock, and ensure that the values are valid. If there is an error with the 
+model, the program will give an error message and quit.
 
 
 \subsection{Option Pricing}
-Once the models have been calibrated and set up, the program can calculate option prices. The program will prompt for the expiry date of the option, and a payoff function. The default choices for payoff function are \textit{Spread call}, \textit{Min call} and \textit{Max call}. More choices can be added -- consult the Developer Documentation.
+Once the models have been calibrated and set up, the program can calculate 
+option prices. The program will prompt for the expiry date of the option, and a 
+payoff function. The default choices for payoff function are \textit{Spread 
+call}, \textit{Min call} and \textit{Max call}. More choices can be added -- 
+consult the Developer Documentation.
 
-Once a payoff function has been selected, the program ask for the lower and upper strike prices $K_{min}$ and $K_{max}$ to evaluate between, and then set about calculating option prices.
+Once a payoff function has been selected, the program ask for the lower and 
+upper strike prices $K_{min}$ and $K_{max}$ to evaluate between, and then set 
+about calculating option prices.
 
-The program will evaluate the option prices in the European option style and then the American option style, with eleven incremental strike prices from $K_{min}$ to $K_{max}$, with each of the 5 expiry dates from $100$ to $500$. As the program is calculating, dotted lines will indicate progress. Once each type of option has been  priced accordingly, the program will indicate that the prices can be found in the files \texttt{Eprices.csv} and \texttt{Aprices.csv} respectively, which can be found in the main directory for the program.
+The program will evaluate the option prices in the European option style and 
+then the American option style, with eleven incremental strike prices from 
+$K_{min}$ to $K_{max}$, with each of the 5 expiry dates from $100$ to $500$. As 
+the program is calculating, dotted lines will indicate progress. Once each type 
+of option has been  priced accordingly, the program will indicate that the 
+prices can be found in the files \texttt{Eprices.csv} and \texttt{Aprices.csv} 
+respectively, which can be found in the main directory for the program.
 \end{document}
