@@ -60,14 +60,14 @@ inline double getTime(double _time){
 */
 inline vector<double> getStock(){
     vector<double> _stock(2);
-    cout << "Please provide positive values for stock prices." << endl;
+    cout << "Please provide positive values for current stock prices." << endl;
     cout << "Stock price of S0:" << endl;
     cin  >> _stock[0];
     cout << "Stock price of S1:" << endl;
     cin  >> _stock[1];
     while (_stock[0] <= 0 || _stock[1] <= 0){
         cout << "Stock prices must be positive decimal values." << endl;
-        cout << "Please provide positive values for stock prices." << endl;
+        cout << "Please provide positive values for current stock prices." << endl;
         cout << "Stock price of S0:" << endl;
         cin  >> _stock[0];
         cout << "Stock price of S1:" << endl;

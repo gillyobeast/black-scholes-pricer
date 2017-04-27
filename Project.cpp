@@ -48,14 +48,13 @@ bool BSModel2::IsWellDefined() const{
 /**
     Constructor for CorrBinModel class.
 */
-CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0()),r(model.Get_r()),h(h_){
-
+CorrBinModel::CorrBinModel (const BSModel2& model, double h_)
+             :S0(model.Get_S0()),r(model.Get_r()),h(h_){
     vector<double> sigma = model.Get_sigma();
-    double rho = model.Get_rho();                   // so we only have to fetch rho and sigma once
-    double rooth = sqrt(h);                         // and calculate sqrt(h) once
+    double rho = model.Get_rho();
+    double rooth = sqrt(h);
 
     double drift;
-
     for (int i=0;i<2;i++){
         drift =(r-0.5*sigma[i]*sigma[i])*h;
         alpha.push_back(drift);
@@ -66,18 +65,10 @@ CorrBinModel::CorrBinModel (const BSModel2& model, double h_):S0(model.Get_S0())
     beta.push_back(sigma[1]*sqrt((1-rho*rho*h)));
 
     long double discount = exp(r*h);
-
-
-
     q.push_back((discount*S0[0]-S(1,0,0)[0])/(S(1,1,0)[0]-S(1,0,0)[0]));
-
-
-    //this is the messiest thing ever but its the only way i can think to do it
     Func myFunction(q[0],S(1,0,0)[1],S(1,0,1)[1],S(1,1,0)[1],S(1,1,1)[1]);
     double target = discount*S0[1];
     q.push_back(SolveByBisect(&myFunction,target,0,1,EPSILON));
-
-
 }
 
 

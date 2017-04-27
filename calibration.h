@@ -59,7 +59,7 @@ inline vector<double> sampleVar(vector<vector<double> > _vector){
 /**
     Calculates the sample covariance of a dataset.
     @param _vector dataset to be worked on
-    @return vector containing the sample variance of the dataset
+    @return the sample covariance of the dataset
 */
 inline double sampleCovar(vector<vector<double> > _vec){
     int _m=_vec[0].size();

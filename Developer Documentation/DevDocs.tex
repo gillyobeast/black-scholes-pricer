@@ -2,9 +2,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
-\usepackage[margin=2cm]{geometry}
+\usepackage[margin=3cm]{geometry}
 \usepackage{amsfonts}
 \usepackage{listings}
+\usepackage{multicol}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{color}
@@ -16,35 +17,226 @@
 	numbers=left, numberstyle=\footnotesize, stepnumber=5, 
 	numbersep = 5pt, numberfirstline=false, firstnumber=last
 }
+\renewcommand\labelitemi{--}
 
-\author{It prices options! \\ Luke Armitage}\date{}
-\title{{\bfseries Developer Documentation} for~Two-Dimensional Black-Scholes model Option Pricer}
+\author{\textit{It prices options!} 
+		\\ Luke Armitage}
+\date{}
+\title{{\bfseries Developer~Documentation}~for 
+Two-Dimensional~Black-Scholes~Model Option~Pricer}
 
 
 \begin{document}
 
 \maketitle
 
-\todo[inline]{introduce software. \\ 
-what's in the box?\\
-detail how to add new payoff functions. \\
-detail nonlinear solver method used in 3.\\
-report on test runs of code.}
-\textsc{Disclaimer}: All code was written by me except for \texttt{Project.h}, and the code in \texttt{solver.h} is based on the bisection method nonlinear solver found in \texttt{Solver03.h} provided as part of the course material.
 
-\todo[inline]{clever things i've done:\\
-overloading of 'get' functions, so you don't have to enter the same values again and again to test.}
+\section{Introduction}
+This program is designed to the specification provided as part of the project 
+brief. It is designed to compute prices of American and European style stock 
+options with a variety of payoff functions. It uses a two-dimensional 
+Black-Scholes model, calibrated with historical stock data, and a discrete-time 
+approximation of a continuous-time, two dimensional binary tree. It can output, 
+to a spreadsheet, stock prices with strike prices in a given range, for a range 
+of given maturity dates. 
+
+\textsc{Disclaimer}: All code was written by me except for \texttt{Project.h}, 
+and the code in \texttt{solver.h} (see section \ref{section:solver}) is based on 
+the bisection method nonlinear solver found in \texttt{Solver03.h} provided as 
+part of the course material.
+
 \section{What's in the box?}
-%% list and details of headers, classes, functions and variables. 
-%% headers ordered by name, other stuff ordered by appearance
+The file \texttt{main.cpp} is comprised mostly of the function \texttt{main()}. 
+This function starts out by greeting the user, and jumps in to producing 
+calibration figures from historical stock data. It will attempt to open the file 
+\texttt{data.csv}, and quit if that fails. If the file is successfully opened, 
+the function will take the data from the \texttt{ifstream data} and store it in 
+the \texttt{vector<vector<double> > S}, pushing each column of data into a 
+column of \texttt{S}. \texttt{data.csv} is then closed, and the user is asked 
+for the time interval of the historical data. Then the function calculates the 
+calibration data from the historical data and displays it in the following 
+format:
+\begin{lstlisting}
+Calibration values:
+   Historical Volatility of S0:  <value>
+                            S1:  <value>
+   Historical Correlation:       <value>
+\end{lstlisting}
+
+The function then gets from the user an interest rate and the current stock 
+prices, and creates a \texttt{BSModel} object with the user's data and the 
+calibration data. If the data is invalid for the model, the program will quit. 
+If the model is valid, the function moves on to pricing options.
+
+The user is asked to specify an expiry date and choose a payoff function, and 
+then specify a lower and upper strike price. The function then follows the 
+following procedure, first for a European style option: 
+\begin{enumerate}
+	\item Attempt to open the file \texttt{Eprices.csv} for writing. If that fails, 
+the program exits.
+	\item Output the column headers to the file.
+	\item For each strike price in the given range, set the strike price for the 
+payoff function, and output the strike price as a row title to the file.
+	\item For each expiry date in the given range, set up a \texttt{CorrBinModel} 
+with that expiry date and then output to the file the option price at the given 
+strike price.
+	\item Close the file and tell the user where they can find the results.
+\end{enumerate} 
+This is repeated for American options, writing to \texttt{Aprices.csv}. This 
+takes a lot (around 10 times) longer due to the greater complexity of the 
+pricing formula for American options. The program then prompts for a 
+\texttt{char} to close it.
+
+
+Now we run through all the header files associated with the project:
 \subsection{\texttt{binomial.h}}
 \begin{itemize}
-	\item[\texttt{binomial}] a function which calculates the binomial coefficent $n\choose k$. Takes arguments \texttt{int n} and \texttt{int k}.
+	\item[\texttt{binomial()}] -- calculates the binomial coefficent ${n\choose 
+k}$. Takes two parameters: \texttt{int n} and \texttt{int k}. Returns a 
+\texttt{double}.
 \end{itemize}
 
-\section{Analysis of \texttt{PriceAmerican} function}
+\subsection{\texttt{calibration.h}}
+This file contains statistical functions, used in calibrating the Black-Scholes 
+model.
+\begin{itemize}
+	\item[\texttt{logReturns()}] -- calculates the logarithmic difference between 
+consecutive terms in a column of a dataset. Takes one parameter: 
+\texttt{vector<double> \_vector}. Returns a \texttt{vector<double>}.
+	\item[\texttt{vecMean()}] -- calculates the mean of each column of a dataset. 
+Takes one parameter: \texttt{vector<double> \_vector}. Returns a 
+\texttt{vector<double>}.
+	\item[\texttt{sampleVar()}] -- calculates the sample variance each column of a 
+dataset. Takes one parameter: \texttt{vector<double> \_vector}. Returns a 
+\texttt{vector<double>}.
+	\item[\texttt{sampleCovar()}] -- calculates the sample covariance of a 
+two-column dataset. Takes one parameter: \texttt{vector<double> \_vector}. 
+Returns a \texttt{double}.
+\end{itemize}
+
+\subsection{\texttt{payoff.h}}
+This header file defines \texttt{SpreadCall}, \texttt{MinCall}, and 
+\texttt{MaxCall} -- three subclasses of \texttt{Payoff}, as defined in 
+\texttt{Project.h}. The only difference between the three classes here is the 
+definition of the member function \texttt{Value}. Each also has a data member 
+\texttt{K}, which is the strike price of the option, and a corresponding 
+accessor function \texttt{get\_K()}.
+
+To add new payoff functions, just copy the structure of the class definitions in 
+\texttt{payoff.h}, with the name of the new payoff function as the class name, 
+and have the function \texttt{Value()} return the value of the payoff. Then in 
+\texttt{main.cpp}, add a declaration of the new class and expand the choices of 
+both the \texttt{while} loop and the \texttt{if-else} sequence that follows, to 
+include the new payoff.
+
+\subsection{\texttt{pricer.h}}
+\begin{itemize}
+	\item[\texttt{PriceEuropean()}] -- calculates a fair price for a European style 
+option. Takes three parameters: 
+	\begin{itemize}
+		\item[\texttt{CorrBinModel\& model}] -- a reference to a \texttt{CorrBinModel} 
+object.
+		\item[\texttt{Payoff\& payoff}] -- a reference to a \texttt{Payoff} object, 
+with a 
+		member function \texttt{Value()} which returns the value of the payoff 
+function 
+		of the stock price $S$ at a given node $(j_0,j_1)$ in the binary tree model.
+		\item[\texttt{N}] -- the expiry date of the American option, the latest time 
+at 
+		which it can be exercised.
+	\end{itemize}
+	Returns a \texttt{double}.
+\end{itemize}
+
+\subsection{\texttt{Project.h} and \texttt{Project.cpp}}
+\texttt{Project.h} is the header file provided for the project, 
+\texttt{Project.cpp} defines the member functions of classes declared in 
+\texttt{project.h} which are not defined there. Also defines the constant 
+\texttt{EPSILON}.
+\begin{itemize}
+	\item[\texttt{BSModel2}] -- class modelling a two-dimensional Black-Scholes 
+model. Members:
+	\begin{itemize}
+		\item[Constructor] -- assigns values to internal parameters.
+		\item[\texttt{IsWellDefined()}] -- check function for validity of member 
+variables -- returns a \texttt{bool}.
+		\item[\texttt{s0}] -- vector of initial stock prices.
+		\item[\texttt{r}] -- interest rate.
+		\item[\texttt{sigma}] -- vector with volatilities of each stock.
+		\item[\texttt{rho}] -- correlation between the logarithmic returns of each 
+stock.
+	\end{itemize}
+	Each member variable has a corresponding accessor function.
+	\item[\texttt{CorrBinModel}] -- class modelling a two-dimensional correlated 
+binary model. Members:
+	\begin{itemize}
+		\item[Constructor] -- calculates \texttt{q}, \texttt{alpha} and \texttt{beta}. 
+Assigns values to internal parameters. 
+		\item[\texttt{S()}] -- calculates pair of stock prices at time step $n$, node 
+$(j_0,j_1)$ of two-dimensional binomial tree. Takes three parameters: 
+\texttt{int n}, \texttt{int j0}, \texttt{int j1}. Returns \texttt{vector 
+<double>}.
+		\item[\texttt{Prob()}] -- calculates the risk-neutral probability at time step 
+$n$, node $(j_0,j_1)$ of two-dimensional binomial tree. Takes three parameters: 
+\texttt{int n}, \texttt{int j0}, \texttt{int j1}. Returns \texttt{double}.
+		\item[\texttt{IsArbitrageFree()}] -- check function for validity of member 
+variable \texttt{q} -- returns a \texttt{bool}.
+		\item[\texttt{s0}] -- vector of initial stock prices.
+		\item[\texttt{r}] -- interest rate.
+		\item[\texttt{h}] -- time step size of binary tree model.
+		\item[\texttt{alpha}] -- vector of parameters used in approximating prices.
+		\item[\texttt{beta}] -- vector of parameters used in approximating prices.
+		\item[\texttt{q}] -- vector with probabilities used for risk-neutral 
+probability.
+	\end{itemize}
+	Each of \texttt{q} \texttt{r} and \texttt{h} have a corresponding accessor 
+function.
+	\item[\texttt{Payoff}] -- class modelling a payoff function for an option. Has 
+one member function, \texttt{Value()}, which is a pure virtual function.
+\end{itemize}
+
+Also defined in this header is the function \texttt{PriceAmerican()} which is 
+broken down in section \ref{section:american}, and a function which allows 
+vectors to be displayed easily using familiar \texttt{std::cout} methods.
+ 
+\subsection{\texttt{projectIO.h}}
+This header defines the following functions for getting user input, with 
+overloaded versions of each (taking one parameter) to let a value to be set 
+inside code rather than through the console. To use these, instead of calling 
+\texttt{getTime()} which asks for user input, call 
+\texttt{getTime(}\textsl{<value>}\texttt{)} to return \textsl{<value>} and print 
+it to console. 
+\begin{multicols}{2}
+\begin{itemize}
+	\item \texttt{getTime()}
+	\item \texttt{getStock()}
+	\item \texttt{getRate()}
+	\item \texttt{getStrike()}
+\end{itemize}
+\end{multicols}
+This header also defines a function \texttt{stod()} which takes a parameter of 
+type \texttt{string} and returns a value of type \texttt{double} (this is 
+necessary because for some reason the \texttt{std::stod} from the standard 
+library didn't work for me). I also tried to make a function 
+\texttt{ifstreamToVector} to convert a data stream to a matrix, but it wouldn't 
+quite work. Left that in there for posterity.
+
+\subsection{\texttt{solver.h}}\label{section:solver} \todo{detail}
+This file contains a nonlinear solver by the bisection method, and a class with 
+very specific data members required to solve the equation for \texttt{q[1]} in 
+\texttt{Project.cpp}. 
+\begin{itemize}
+	\item[SolveByBisect()] -- finds a solution $x$ to the equation $f(x) = c$. 
+Takes five parameters: \texttt{F* Function} (of templated type, corresponds to 
+$f$), \texttt{double target} (corresponds to $c$, \texttt{leftEnd} and 
+\texttt{rightEnd}, the endpoints of the interval that $x$ is in, and 
+\texttt{Acc}, how close we need to get to $x$. Returns \texttt{double}.
+\end{itemize}
+
+\section{Analysis of \texttt{PriceAmerican} function}\label{section:american}
 Part of the project brief is to analyse the function \texttt{PriceAmerican}. 
-It calculates a fair price for an American style option based on a given correlated binary model and payoff function.
+It calculates a fair price for an American style option with a given expiry 
+time, based on a given correlated binary model and payoff function.
 
 \begin{lstlisting}
 inline double PriceAmerican (const CorrBinModel& model, 
@@ -61,7 +253,14 @@ of the stock price $S$ at a given node $(j_0,j_1)$ in the binary tree model.
 	\item[\texttt{N}] -- the expiry date of the American option, the latest time at 
 which it can be exercised.
 \end{itemize}
-A function declared with the keyword \texttt{inline} suggests to the compiler that it may, if the function is ``small'' enough, insert the definition of the function `in-line', in place of the function call. This can speed up the program by reducing the number of times it needs to jump to the function definition and back, but at the cost of compile time and an increase in the size of the executable file. The keyword \texttt{const} means that the function should only access data members of each object without changing them -- for example to call the member function \texttt{Get\_q()} of the object \texttt{model}.
+A function declared with the keyword \texttt{inline} suggests to the compiler 
+that it may, if the function is ``small'' enough, insert the definition of the 
+function `in-line', in place of the function call. This can speed up the program 
+by reducing the number of times it needs to jump to the function definition and 
+back, but at the cost of compile time and an increase in the size of the 
+executable file. The keyword \texttt{const} means that the function should only 
+access data members of each object without changing them -- for example to call 
+the member function \texttt{Get\_q()} of the object \texttt{model}.
 
 
 
@@ -124,12 +323,29 @@ values at the expiry time.
 };
 \end{lstlisting}
 
-The \texttt{for} loop on line $20$ means we're working our way backwards from the expiry date, so at each time step we are considering the first $n+1$ rows and $n+1$ columns of \texttt{v} -- and at the $n=0$ step, we are considering the single value \texttt{v[0][0]}, which is then returned by the function after the loop ends.
+The \texttt{for} loop on line $20$ means we're working our way backwards from 
+the expiry date, so at each time step we are considering the first $n+1$ rows 
+and $n+1$ columns of \texttt{v} -- and at the $n=0$ step, we are considering the 
+single value \texttt{v[0][0]}, which is then returned by the function after the 
+loop ends.
 
-The assignment \texttt{pv=v} stores in \texttt{pv} the state of \texttt{v} at the beginning of each run through the loop, which is necessary because we will be changing the values during each run depending on the state of \texttt{v} after the previous cycle.
+The assignment \texttt{pv=v} stores in \texttt{pv} the state of \texttt{v} at 
+the beginning of each run through the loop, which is necessary because we will 
+be changing the values during each run depending on the state of \texttt{v} 
+after the previous cycle.
 
-The nested \texttt{for} loop runs through the $n+1$-by-$n+1$ submatrix of \texttt{v}, following the same procedure at each node $(j_0,j_1)$ (for $j_0,j_1=1,\dots,n$). First, \texttt{ev} stores the payoff for exercising at the node $(j_0,j_1)$ and time $n$, and \texttt{cv} stores the potential future return. This is calculated by summing, over the four successor nodes, the probability of moving to that node multiplied by the payoff corresponding to that node -- which is stored in \texttt{pv}.
-The statement \texttt{v[j0][j1] = (ev>cv)?ev:cv} means that the program will compare the values of \texttt{ev} and \texttt{cv}, and store the greater of the two in \texttt{v[j0][j1]}.
+The nested \texttt{for} loop runs through the $n+1$-by-$n+1$ submatrix of 
+\texttt{v}, following the same procedure at each node $(j_0,j_1)$ (for 
+$j_0,j_1=1,\dots,n$). First, \texttt{ev} stores the payoff for exercising at the 
+node $(j_0,j_1)$ and time $n$, and \texttt{cv} stores the potential future 
+return. This is calculated by summing, over the four successor nodes, the 
+probability of moving to that node multiplied by the payoff corresponding to 
+that node -- which is stored in \texttt{pv}.
+The statement \texttt{v[j0][j1] = (ev>cv)?ev:cv} means that the program will 
+compare the values of \texttt{ev} and \texttt{cv}, and store the greater of the 
+two in \texttt{v[j0][j1]}.
 
-In this way, the function calculates the payoffs for all nodes at each time step $n$ and then returns the value it calculates for the first node $(0,0)$ at time $0$ -- the fair price of the American option.
+In this way, the function calculates the payoffs for all nodes at each time step 
+$n$ and then returns the value it calculates for the first node $(0,0)$ at time 
+$0$ -- the fair price of the American option.
 \end{document}

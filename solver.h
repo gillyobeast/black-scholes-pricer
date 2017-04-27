@@ -3,10 +3,12 @@
 
 /** this file contains a nonlinear solver by bisection, and
     a class with very specific data members required to solve
-    the specific equation i need to solve in Project.cpp   */
+    the specific equation i need to solve in Project.cpp    */
+/*  the code here is based on the bisection method nonlinear solver found
+    in Solver03.h, provided as part of the course material.         */
 
-
-template<typename F> double SolveByBisect(F* Function, double target, double leftEnd,
+template<typename F>
+inline double SolveByBisect(F* Function, double target, double leftEnd,
                                         double rightEnd, double Acc){
     double left = leftEnd, right = rightEnd, mid = (left + right)/2;
     double y_left = Function->Value(left) - target, y_mid = Function->Value(mid) - target;
